@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="ivekes 的博客"><meta name="keywords" content="java,mysql,mybatis,spring,es"><title>进阶点滴 | ivekes</title><link rel="stylesheet" type="text/css" href="//fonts.loli.net/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.3"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.3"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">进阶点滴</h1><a id="logo" href="/.">ivekes</a><p class="description">暂伴月将影，行乐须及春</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">进阶点滴</h1><div class="post-meta"><a href="/2019/07/22/进阶点滴/#comments" class="comment-count"></a><p><span class="date">Jul 22, 2019</span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><ol>
+<li>java 线程池的实现原理</li>
+<li>java 序列化的方式</li>
+<li>字节流、字符流转换</li>
+<li>http 和 https 的区别</li>
+<li>常见的算法</li>
+<li>springcloud 了解</li>
+<li></li>
+<li>数据的乐观锁、悲观锁</li>
+</ol>
+<h2 id="mysql-数据库相关"><a href="#mysql-数据库相关" class="headerlink" title="mysql 数据库相关"></a>mysql 数据库相关</h2><h4 id="1-存储引擎怎么查看，mysql支持的存储引擎？"><a href="#1-存储引擎怎么查看，mysql支持的存储引擎？" class="headerlink" title="1.存储引擎怎么查看，mysql支持的存储引擎？"></a>1.存储引擎怎么查看，mysql支持的存储引擎？</h4><p>查看版本号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select version();</span><br></pre></td></tr></table></figure>
+<p>查看存储引擎</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show engines</span><br></pre></td></tr></table></figure>
+<p><img src="C:\Users\zk\Desktop\mysql_engine.png" alt="mysql engines"></p>
+<h4 id="2-乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解"><a href="#2-乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解" class="headerlink" title="2.乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解?"></a>2.乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解?</h4><p><strong>乐观锁和悲观锁</strong></p>
+<ul>
+<li><p><strong>悲观锁 </strong></p>
+<p>顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以<strong>每次在拿数据的时候都会上锁</strong>，这样别人想拿这个数据就会block直到它释放锁，比如<strong>行锁，表锁等，读锁，写锁</strong>等，都是在做操作之前先上锁</p>
+</li>
+<li><p><strong>乐观锁</strong></p>
+<p>顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在<strong>更新的时候会判断一下</strong>在此期间别人有没有去更新这个数据，可以使用<strong>版本号、时间戳</strong>等机制实现</p>
+</li>
+<li><p><strong>总结</strong></p>
+<p>两种锁各有优缺点，不可认为一种好于另一种，像<strong>乐观锁适用于写比较少的情况下</strong>，即冲突真的很少发生的时候，这样可以省去了锁的开销，加大了系统的整个吞吐量。但<strong>如果经常产生冲突</strong>，上层应用会不断的进行retry，这样反倒是降低了性能，<strong>所以这种情况下用悲观锁就比较合适</strong> </p>
+</li>
+</ul>
+<p><strong>共享锁和排他锁</strong> </p>
+<ul>
+<li><p><strong>共享锁</strong></p>
+<p>对某一资源加共享锁，自身可以读该资源，其他人也可以读该资源（也可以再继续加共享锁，即 共享锁可多个共存），但无法修改。要想修改就必须等所有共享锁都释放完之后</p>
+</li>
+<li><p><strong>排它锁/独占锁</strong></p>
+<p>对某一资源加排他锁，自身可以进行增删改查，其他人无法进行任何操作</p>
+</li>
+<li><p><strong>注意</strong></p>
+<p><strong>数据库的增删改操作默认都会加排他锁，而查询不会加任何锁</strong> </p>
+</li>
+</ul>
+<p><strong>行锁、表锁和页面锁</strong></p>
+<ul>
+<li><p><strong>行锁</strong></p>
+<p>开销大，加锁慢，<strong>会出现死锁</strong>；锁定粒度小，发生锁冲突的概率低，并发度高</p>
+</li>
+<li><p><strong>表锁</strong></p>
+<p>开销小，加锁快，不会出现死锁；锁定力度大，发生锁冲突概率高，并发度最低</p>
+</li>
+<li><p><strong>页面锁</strong></p>
+<p>开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般</p>
+</li>
+<li><p><strong>补充</strong></p>
+<p>MyISAM和MEMORY存储引擎采用的是表级锁，InnoDB存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁</p>
+</li>
+</ul>
+<p><strong>死锁</strong></p>
+<ul>
+<li><p><strong>什么是死锁</strong></p>
+<p>是指两个或两个以上的进程在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁进程。由于资源占用是互斥的，当某个进程提出申请资源后，使得有关进程在无外力协助下，永远分配不到必需的资源而无法继续运行，这就产生了一种特殊现象死锁</p>
+</li>
+<li><p><strong>产生死锁的四个必要条件</strong></p>
+<ul>
+<li>互斥条件：一个资源每次只能被一个进程使用。</li>
+<li>请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。</li>
+<li>不剥夺条件:进程已获得的资源，在末使用完之前，不能强行剥夺。</li>
+<li>循环等待条件:若干进程之间形成一种头尾相接的循环等待资源关系。</li>
+</ul>
+</li>
+<li><p><strong>死锁的影响</strong></p>
+<p>当产生某表死锁的一开始,所有涉及这张表的操作都将受到阻塞。假设这张表在业务逻辑上是读写频繁的，那就会使很多操作在那里排队等待，而排队等待会占用数据库连接，当该达到该数据库连接数的最大承载数之后，就会使所有数据库操作均无法再继续下去，致使数据库各项指标异常，导致整个环境崩溃。在生产环境中出现这种问题，那是相当致命的，当发现数据库指标异常时因快速处理！</p>
+</li>
+<li><p><strong>发现死锁 </strong></p>
+<ul>
+<li><p>第一种</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SHOW OPEN TABLES WHERE In_use &gt; 0;# 查询是否锁表</span><br><span class="line">show [full] processlist;#查询进程（如果您有SUP权限，您可以看到所有线程。否则，您只能看到您自己的线程）</span><br><span class="line">kill id;#杀死进程id（就是上面命令的id列）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二种</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX;#查看当前的事务</span><br><span class="line">SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS;#查看当前锁定的事务</span><br><span class="line">SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS;#查看当前等锁的事务</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>处理死锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill 进程processID</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>降低死锁</strong></p>
+<ul>
+<li>按同一顺序访问对象。</li>
+<li>避免事务中的用户交互。</li>
+<li>保持事务简短并在一个批处理中。</li>
+<li>使用低隔离级别。</li>
+<li>使用绑定连接。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-mysql-的执行计划"><a href="#3-mysql-的执行计划" class="headerlink" title="3.mysql 的执行计划"></a>3.mysql 的执行计划</h4></div><div class="post-copyright"><blockquote><p>原文作者: ivekes</p><p>原文链接: <a href="https://ivekes.github.io/2019/07/22/进阶点滴/">https://ivekes.github.io/2019/07/22/进阶点滴/</a></p><p>版权声明: 转载请注明出处(必须保留作者署名及链接)</p></blockquote></div><div class="tags"><a href="/tags/java进阶/">java进阶</a></div><div class="post-share"><div class="social-share"><span>分享到:</span></div></div><div class="post-nav"><a href="/2019/07/22/shell编程点滴/" class="pre">shell编程点滴</a><a href="/2019/07/20/git点滴/" class="next">git点滴</a></div><div id="comments"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql-数据库相关"><span class="toc-text">mysql 数据库相关</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-存储引擎怎么查看，mysql支持的存储引擎？"><span class="toc-text">1.存储引擎怎么查看，mysql支持的存储引擎？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解"><span class="toc-text">2.乐观锁、悲观锁、共享锁、排它锁、行锁、表锁、死锁概念的理解?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-mysql-的执行计划"><span class="toc-text">3.mysql 的执行计划</span></a></li></ol></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/07/22/hexo/">hexo</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/22/shell编程点滴/">shell编程点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/22/进阶点滴/">进阶点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/git点滴/">git点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/07/java基础/">java基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/06/快捷键/">快捷键</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/01/rocketmq点滴/">rocketmq点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/25/centos7新机及克隆/">centos7新机及克隆</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/25/zookeper点滴/">zookeper点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/25/springcloud点滴/">springcloud点滴</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/centos7/" style="font-size: 15px;">centos7</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/java，位运算/" style="font-size: 15px;">java，位运算</a> <a href="/tags/springcloud/" style="font-size: 15px;">springcloud</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/java进阶/" style="font-size: 15px;">java进阶</a> <a href="/tags/git-github/" style="font-size: 15px;">git github</a> <a href="/tags/linux-shell/" style="font-size: 15px;">linux shell</a> <a href="/tags/idea-linux-docker-hexo/" style="font-size: 15px;">idea,linux,docker,hexo</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.baidu.com/" title="百度" target="_blank">百度</a><ul></ul><a href="https://chaoo.oschina.io/" title="秋过冬漫长" target="_blank">秋过冬漫长</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |  <a href="/atom.xml">订阅本站</a> |  <a href="/about/">联系博主</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次，本站总访客数:<i id="busuanzi_container_site_uv"><i id="busuanzi_value_site_uv"></i></i>人</p><p><span> Copyright &copy;<a href="/." rel="nofollow">ivekes.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.3"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.3" async></script><link rel="stylesheet" type="text/css" href="/share/css/share.css"><script type="text/javascript" src="/share/js/social-share.js" charset="utf-8"></script><script type="text/javascript" src="/share/js/qrcode.js" charset="utf-8"></script></body></html>
