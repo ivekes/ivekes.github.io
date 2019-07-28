@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="ivekes 的博客"><meta name="keywords" content="java,mysql,mybatis,spring,es"><title>zookeper点滴 | ivekes</title><link rel="stylesheet" type="text/css" href="//fonts.loli.net/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.3"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.3"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">zookeper点滴</h1><a id="logo" href="/.">ivekes</a><p class="description">暂伴月将影，行乐须及春</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">zookeper点滴</h1><div class="post-meta"><a href="/2018/09/25/zookeper点滴/#comments" class="comment-count"></a><p><span class="date">Sep 25, 2018</span></p></div><div class="post-content"><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
+<li>内存2g</li>
+<li>jdk1.8</li>
+<li>zookeeper3.5.5</li>
+<li>centos7 3个节点 mynode6,mynode7,mynode8</li>
+<li>说明：参考资料 <a href="https://zookeeper.apache.org/" target="_blank" rel="noopener">zookeeper官网 </a>  <a href="https://www.cnblogs.com/lsdb/p/7297731.html" target="_blank" rel="noopener">努力改个网名</a>  <a href="https://blog.csdn.net/chengyuqiang/article/details/79190061" target="_blank" rel="noopener">简单理解Zookeeper的Leader选举</a></li>
+</ul>
+<h2 id="下载-amp-单机安装"><a href="#下载-amp-单机安装" class="headerlink" title="下载 &amp; 单机安装"></a>下载 &amp; 单机安装</h2><ul>
+<li><p>下载</p>
+<p><a href="http://39.137.67.79/mirror.bit.edu.cn/apache/zookeeper/zookeeper-3.5.5/apache-zookeeper-3.5.5-bin.tar.gz" target="_blank" rel="noopener">tar包下载</a></p>
+</li>
+<li><p>解压</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf apache-zookeeper-3.5.5-bin.tar.gz -C zookeeper</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置</p>
+<p>在 zk 目录下创建目录 data 和 logs 两个目录存储数据和日志</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p /tools/zookeeper/&#123;data,logs&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>在 conf 目录下新建 zoo.cfg 文件，写入以下内容保存</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tickTime=2000</span><br><span class="line">dataDir=/tools/zookeeper/data</span><br><span class="line">dataLogDir=/tools/zookeeper/logs</span><br><span class="line">clientPort=2181</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动 &amp; 停止</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./zkServer.sh start</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./zkServer.sh stop</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./zkServer.sh restart</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./zkServer.sh status</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="集群模式"><a href="#集群模式" class="headerlink" title="集群模式"></a>集群模式</h2><ol>
+<li><p>关闭防火墙和selinux</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 关闭防火墙</span></span><br><span class="line">systemctl stop firewalld.service</span><br><span class="line"><span class="meta">#</span><span class="bash"> 禁止防火墙自动启动</span></span><br><span class="line">systemctl disable firewalld.service</span><br><span class="line"><span class="meta">#</span><span class="bash"> 关闭selinux : setenforce 0</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 禁止selinux启动：vim /etc/selinux/config</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>SELINUX=disabled</p>
+</blockquote>
+</li>
+<li><p>将单机模式下配置好的 zookeeper 分发到其他节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> scp -r zookeeper mynode7:`<span class="built_in">pwd</span>`</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> scp -r zookeeper mynode8:`<span class="built_in">pwd</span>`</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>conf/zoo.cfg文件修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tickTime=2000</span><br><span class="line">dataDir=/tools/zookeeper/data</span><br><span class="line">dataLogDir=/tools/zookeeper/logs</span><br><span class="line">clientPort=2181</span><br><span class="line">initLimit=5</span><br><span class="line">syncLimit=2</span><br><span class="line">server.1=mynode6:2888:3888</span><br><span class="line">server.2=mynode7:2888:3888</span><br><span class="line">server.3=mynode8:2888:3888</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>data/myid文件修改</p>
+<p>mynode6</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'1'</span> &gt; /tools/zookeeper/data/myid</span></span><br></pre></td></tr></table></figure>
+<p>mynode7</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'2'</span> &gt; /tools/zookeeper/data/myid</span></span><br></pre></td></tr></table></figure>
+<p>mynode8</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> <span class="string">'3'</span> &gt; /tools/zookeeper/data/myid</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加环境变量</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo -e 'export ZOOKEEPER_HOME=/tools/zookeeper \n export PATH=$ZOOKEEPER_HOME/bin:$PATH' &gt;&gt;/etc/profile</span><br><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动</p>
+</li>
+</ol>
+<h2 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h2><h4 id="集群角色"><a href="#集群角色" class="headerlink" title="集群角色"></a>集群角色</h4><ul>
+<li>leader 是整个 zookeeper 服务的核心，主要职责有如下两项：<ul>
+<li>集群内部各服务器的调度者</li>
+<li>事务请求的唯一调度和处理者，保证集群事务处理的顺序性</li>
+</ul>
+</li>
+<li>follower 主要职责如下：<ul>
+<li>参与 leader 的选举的投票</li>
+<li>处理客户端非事务请求，转发事务请求给 leader 服务器</li>
+<li>参与事务请求的 proposal 的投票（需要半数以上服务器通过才能通知 leader commit 数据，leader 发起提案，要求 follow 投票）</li>
+</ul>
+</li>
+<li>observer<ul>
+<li>是 zk 3.3 开始引入的一个全新的服务器角色，充当观察者的角色</li>
+<li>观察并同步 zk 集群最新状态变化到 observer 服务器上</li>
+<li>与 follow 的区别，observer 不参与任何形式的投票，包括事务  proposal 的投票和 leader 选举的投票</li>
+</ul>
+</li>
+<li>looking<ul>
+<li>寻找 leader 状态，处于该状态需要进入选举流程</li>
+</ul>
+</li>
+</ul>
+<h4 id="节点状态"><a href="#节点状态" class="headerlink" title="节点状态"></a>节点状态</h4><ul>
+<li>looking        当前 server 不知道 leader 是谁，正在搜寻</li>
+<li>leading        当前 server 被选为 leader</li>
+<li>following     leader 已经选举出来，当前server与 leader 同步</li>
+</ul>
+<h4 id="leader-选举"><a href="#leader-选举" class="headerlink" title="leader 选举"></a>leader 选举</h4><h5 id="初始期间"><a href="#初始期间" class="headerlink" title="初始期间"></a>初始期间</h5><ul>
+<li>每个 server 发出一个将自己作为 leader 的投票,该次投票会包含所推举的服务器 myid 和 zxid ，发送给集群的其他机器</li>
+<li>接收来自各个服务器的投票，判断该投票的有效性，如检查是否来自本轮投票、是否来自 looking 状态的服务器</li>
+<li>处理投票，对每一个投票，server 都需要将其他节点的投票和自己的投票进行比较，规则是先比较 zxid 谁大确认谁做 leader，如果相同比较 myid，谁大确认谁做 leader,确认后发送投票给确认的 leader</li>
+<li>统计投票，每次投票后，服务器会统计投票信息，判断是否已经有过半的机器接收到相同的投票信息</li>
+<li>改变服务器状态，一旦确定 leader，每个服务器会更新自己的状态，leader 变更为 leading， follower 变更为 following</li>
+</ul>
+<h5 id="运行期间"><a href="#运行期间" class="headerlink" title="运行期间"></a>运行期间</h5><ul>
+<li>变更状态，leader 挂掉后，余下的非 observer 服务器会将自己的服务器状态变更为 looking，然后开始进入 leader 选举过程</li>
+<li>每个 server 发出一个投票给集群中所有机器</li>
+<li>接收来自各个服务器的投票，与启动相同</li>
+<li>处理投票，与启动相同</li>
+<li>统计投票，与启动相同</li>
+<li>改变服务器状态，与启动相同</li>
+</ul>
+<h4 id="数据同步和数据一致性"><a href="#数据同步和数据一致性" class="headerlink" title="数据同步和数据一致性"></a>数据同步和数据一致性</h4><p>为了简化集群数据同步的复杂性，将客户端请求分为事务性数据请求和非事务性数据请求，leader 节点可以处理事务和非事务型数据，follower 节点只能处理非事务性数据。leader 节点和其他节点为保持数据一致性，需要用到分布式事务，分布式事务有 2pc 和 3pc 协议</p>
+<ul>
+<li><p>阶段一：提交事务请求（投票） </p>
+<ol>
+<li><p>事务询问 </p>
+<p>协调者向所有的参与者发送事务内容，询问是否可以执行事务提交操作，并开始等待各参与者的<br>响应 </p>
+</li>
+<li><p>执行事务 </p>
+<p>各个参与者节点执行事务操作，并将 Undo 和 Redo 信息记录到事务日志中，尽量把提交过程中<br>所有消耗时间的操作和准备都提前完成确保后面 100%成功提交事务</p>
+</li>
+<li><p>各个参与者向协调者反馈事务询问的响应 </p>
+<p>如果各个参与者成功执行了事务操作，那么就反馈给参与者 yes 的响应，表示事务可以执行；<br>如果参与者没有成功执行事务，就反馈给协调者 no 的响应，表示事务不可以执行，上面这个阶<br>段有点类似协调者组织各个参与者对一次事务操作的投票表态过程，因此 2pc 协议的第一个阶<br>段称为“投票阶段”，即各参与者投票表名是否需要继续执行接下去的事务提交操作</p>
+</li>
+</ol>
+</li>
+<li><p>执行事务提交 </p>
+<p>在这个阶段，协调者会根据各参与者的反馈情况来决定最终是否可以进行事务提交操作，正常情况<br>下包含两种可能:执行事务、中断事务 </p>
+</li>
+</ul>
+<h2 id="节点特性"><a href="#节点特性" class="headerlink" title="节点特性"></a>节点特性</h2><ul>
+<li>持久化节点</li>
+<li>顺序节点<code>create -s [/key] value</code></li>
+<li>临时节点`create -e /key value</li>
+<li>ttl 和 容器节点</li>
+<li>临时节点不能存在子节点</li>
+<li>创建节点时，必须要带上全路径</li>
+<li>同一级别的节点不能存在重复</li>
+</ul>
+<h2 id="节点操作"><a href="#节点操作" class="headerlink" title="节点操作"></a>节点操作</h2><ul>
+<li>创建节点<ul>
+<li>能够创建顺序节点<code>create -s [/key] value</code></li>
+<li>能够创建临时节点<code>create -e /key value</code></li>
+</ul>
+</li>
+<li>删除节点<ul>
+<li>节点只能一层一层的删除</li>
+<li>可以通过 <code>deleteall key</code> 实现递归删除</li>
+</ul>
+</li>
+<li><p>修改节点</p>
+<p>修改命令<code>set key value</code></p>
+</li>
+<li><p>查看节点</p>
+<p>watcher 机制 <code>get -w key</code>，只会监听到一次</p>
+</li>
+</ul>
+</div><div class="post-copyright"><blockquote><p>原文作者: ivekes</p><p>原文链接: <a href="https://ivekes.github.io/2018/09/25/zookeper点滴/">https://ivekes.github.io/2018/09/25/zookeper点滴/</a></p><p>版权声明: 转载请注明出处(必须保留作者署名及链接)</p></blockquote></div><div class="tags"><a href="/tags/zookeeper/">zookeeper</a></div><div class="post-share"><div class="social-share"><span>分享到:</span></div></div><div class="post-nav"><a href="/2018/12/01/rocketmq点滴/" class="pre">rocketmq点滴</a><a href="/2018/03/07/java基础/" class="next">java基础</a></div><div id="comments"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#环境"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#下载-amp-单机安装"><span class="toc-text">下载 &amp; 单机安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群模式"><span class="toc-text">集群模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#设计思想"><span class="toc-text">设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#集群角色"><span class="toc-text">集群角色</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#节点状态"><span class="toc-text">节点状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#leader-选举"><span class="toc-text">leader 选举</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#初始期间"><span class="toc-text">初始期间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#运行期间"><span class="toc-text">运行期间</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据同步和数据一致性"><span class="toc-text">数据同步和数据一致性</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#节点特性"><span class="toc-text">节点特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#节点操作"><span class="toc-text">节点操作</span></a></li></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/07/27/spring点滴/">spring点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/25/springcloud点滴/">springcloud点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/10/mysql8在win10安装/">mysql8在win10安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/22/shell编程点滴/">shell编程点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/01/rocketmq点滴/">rocketmq点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/09/25/zookeper点滴/">zookeper点滴</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/07/java基础/">java基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/21/centos7新机及克隆/">centos7新机及克隆</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/03/快捷键/">快捷键</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/25/git点滴/">git点滴</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/springcloud/" style="font-size: 15px;">springcloud</a> <a href="/tags/centos7/" style="font-size: 15px;">centos7</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/java，位运算/" style="font-size: 15px;">java，位运算</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/spring/" style="font-size: 15px;">spring</a> <a href="/tags/git-github/" style="font-size: 15px;">git github</a> <a href="/tags/linux-shell/" style="font-size: 15px;">linux shell</a> <a href="/tags/idea-linux-docker-hexo/" style="font-size: 15px;">idea,linux,docker,hexo</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.baidu.com/" title="百度" target="_blank">百度</a><ul></ul><a href="https://chaoo.oschina.io/" title="秋过冬漫长" target="_blank">秋过冬漫长</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |  <a href="/atom.xml">订阅本站</a> |  <a href="/about/">联系博主</a></p><p><span> Copyright &copy;<a href="/." rel="nofollow">ivekes.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script type="text/javascript" src="/js/search.json.js?v=2.0.3"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.3" async></script><link rel="stylesheet" type="text/css" href="/share/css/share.css"><script type="text/javascript" src="/share/js/social-share.js" charset="utf-8"></script><script type="text/javascript" src="/share/js/qrcode.js" charset="utf-8"></script></body></html>
